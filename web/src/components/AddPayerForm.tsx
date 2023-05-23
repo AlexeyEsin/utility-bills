@@ -15,6 +15,11 @@ const initialFormValues: Partial<TPayer> = {
 export const AddPayerForm: FC<TAddPayerFormProps> = ({ onAdd }) => {
   const [form] = Form.useForm<TPayer>();
 
+  const handleAddPayer = () => {
+    onAdd(form.getFieldsValue());
+    form.resetFields();
+  };
+
   return (
     <div className="addPayerForm">
       <Typography.Title level={4}>Добавить плательщика</Typography.Title>
@@ -22,7 +27,7 @@ export const AddPayerForm: FC<TAddPayerFormProps> = ({ onAdd }) => {
         form={form}
         name="addPayerForm"
         autoComplete="off"
-        onFinish={onAdd}
+        onFinish={handleAddPayer}
         layout="inline"
         initialValues={initialFormValues}
       >

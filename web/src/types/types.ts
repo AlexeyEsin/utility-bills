@@ -1,4 +1,4 @@
-export type TCurrency = 'wei' | 'gwei' | 'finney' | 'ether';
+export type TUnit = 'wei' | 'gwei' | 'finney' | 'ether';
 
 export type SelectOption<T> = {
   value: T;
@@ -17,7 +17,7 @@ export type TContractBill = {
 };
 
 export type TBill = TContractBill & {
-  amountWithCurrency: string;
+  amountWithUnit: string;
 };
 
 export type TContractPayer = {
@@ -32,5 +32,5 @@ export type TPayer = Omit<TContractPayer, 'payerAddress' | 'unpaidBillsCount'> &
   address: string;
   billsCount: number;
   unpaidBillsCount: number;
-  unpaidAmountWithCurrency: string;
+  unpaidAmountWithUnit: string;
 };

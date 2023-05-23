@@ -37,8 +37,8 @@ export const PayersTable: FC<TPayersTableProps> = ({ tableData, onIssueBill, onR
     },
     {
       title: 'Сумма неуплаты',
-      dataIndex: 'unpaidAmountWithCurrency',
-      key: 'unpaidAmountWithCurrency',
+      dataIndex: 'unpaidAmountWithUnit',
+      key: 'unpaidAmountWithUnit',
       sorter: (a, b) => a.unpaidAmount.localeCompare(b.unpaidAmount),
     },
     {

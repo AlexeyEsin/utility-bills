@@ -50,7 +50,12 @@ export const App = () => {
 
   const handleCashOut = () => {
     try {
-      contract.methods.Withdraw().send({ from: address });
+      contract.methods
+        .Withdraw()
+        .send({ from: address })
+        .then(() => {
+          setAccountBalance('0');
+        });
     } catch (e) {
       messageApi.open({ type: 'error', content: 'Произошла ошибка' });
     }

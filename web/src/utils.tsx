@@ -3,7 +3,7 @@ import Web3 from 'web3';
 import { Tag } from 'antd';
 
 import { CONTRACT_ABI } from 'contracts/contractConfig';
-import { SelectOption, TBill, TBillStatus, TContractBill, TContractPayer, TCurrency, TPayer } from 'types/types';
+import { SelectOption, TBill, TBillStatus, TContractBill, TContractPayer, TUnit, TPayer } from 'types/types';
 
 export const web3 = new Web3(Web3.givenProvider || process.env.BLOCKCHAIN_HOST);
 export const contract = new web3.eth.Contract(CONTRACT_ABI, process.env.CONTRACT_ADDRESS);
@@ -62,7 +62,7 @@ export const convertAmount = (amount: string) => {
 export const parseBill = (bill: TContractBill): TBill => ({
   uuid: bill.uuid,
   amount: bill.amount,
-  amountWithCurrency: convertAmount(bill.amount),
+  amountWithUnit: convertAmount(bill.amount),
   isPaid: bill.isPaid,
   billingDate: bill.billingDate,
   paymentDate: bill.paymentDate,
@@ -77,12 +77,12 @@ export const parsePayer = (payer: TContractPayer): TPayer => ({
   billsCount: payer.billsUuids.length,
   unpaidBillsCount: Number(payer.unpaidBillsCount),
   unpaidAmount: payer.unpaidAmount,
-  unpaidAmountWithCurrency: convertAmount(payer.unpaidAmount),
+  unpaidAmountWithUnit: convertAmount(payer.unpaidAmount),
 });
 
 export const parsePayers = (payers: TContractPayer[]) => payers.map((payer) => parsePayer(payer));
 
-export const currencyOptions: SelectOption<TCurrency>[] = [
+export const unitOptions: SelectOption<TUnit>[] = [
   { value: 'wei', label: 'Wei' },
   { value: 'gwei', label: 'Gwei' },
   { value: 'finney', label: 'Finney' },

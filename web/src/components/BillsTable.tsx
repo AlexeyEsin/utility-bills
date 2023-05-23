@@ -15,8 +15,8 @@ export const BillsTable: FC<TBillsTableProps> = ({ tableData, isAdmin, onMakePay
   const columns: ColumnsType<TBill> = [
     {
       title: 'Сумма',
-      dataIndex: 'amountWithCurrency',
-      key: 'amountWithCurrency',
+      dataIndex: 'amountWithUnit',
+      key: 'amountWithUnit',
       sorter: (a, b) => a.amount.localeCompare(b.amount),
     },
     {

@@ -2,7 +2,7 @@ import React, { FC, useEffect, useState } from 'react';
 import { message } from 'antd';
 import { v4 as uuidv4 } from 'uuid';
 
-import type { TBill, TContractBill, TContractPayer, TCurrency, TPayer } from 'types/types';
+import type { TBill, TContractBill, TContractPayer, TUnit, TPayer } from 'types/types';
 import { contract, parseBills, parsePayers, web3 } from 'utils';
 import { PayersTable } from './PayersTable';
 import { AddPayerForm } from './AddPayerForm';
@@ -59,7 +59,7 @@ export const AdminPage: FC<TAdminPageProps> = ({ address }) => {
               billsCount: 0,
               unpaidBillsCount: 0,
               unpaidAmount: '0',
-              unpaidAmountWithCurrency: '0 wei',
+              unpaidAmountWithUnit: '0 wei',
             },
           ]);
         });
@@ -78,8 +78,8 @@ export const AdminPage: FC<TAdminPageProps> = ({ address }) => {
     setIsModalOpen(false);
   };
 
-  const handleModalOk = (billAmount: number, currency: TCurrency) => {
-    const convertedAmount = web3.utils.toWei(`${billAmount}`, currency);
+  const handleModalOk = (billAmount: number, unit: TUnit) => {
+    const convertedAmount = web3.utils.toWei(`${billAmount}`, unit);
     const billUuid = uuidv4();
     const billingDate = new Date().toISOString();
 
