@@ -4,8 +4,7 @@ import { CONTRACT_ABI } from 'contracts/contractConfig';
 import { SelectOption, TContractPayer, TUnit, TPayer, TUserData } from 'types/types';
 
 export const web3 = new Web3(Web3.givenProvider || process.env.BLOCKCHAIN_HOST);
-// export const contract = new web3.eth.Contract(CONTRACT_ABI, process.env.CONTRACT_ADDRESS);
-export const contract = new web3.eth.Contract(CONTRACT_ABI, '0x94D12C8558CFb9ab6947038948184A7805B1315D');
+export const contract = new web3.eth.Contract(CONTRACT_ABI, process.env.CONTRACT_ADDRESS);
 
 export const convertAmount = (amount: string) => {
   if (amount.length > 18) {
