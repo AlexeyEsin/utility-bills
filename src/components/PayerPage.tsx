@@ -57,7 +57,9 @@ export const PayerPage: FC<TPayerPageProps> = ({ address }) => {
         <Spin spinning={isLoading}>
           <Typography.Title level={3}>Добро пожаловать, {getFullName(userInfo)}</Typography.Title>
           <div className="debtInfo">
-            <Typography.Text>Сумма задолженности: {userInfo.debtWithUnit}</Typography.Text>
+            <Typography.Text className="text">
+              Сумма задолженности: <span className="amount">{userInfo.debtWithUnit}</span>
+            </Typography.Text>
             <Button type="primary" onClick={handleMakePayment} disabled={userInfo.debt === 0}>
               Погасить
             </Button>

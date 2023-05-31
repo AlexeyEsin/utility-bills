@@ -57,6 +57,7 @@ export const AdminPage: FC<TAdminPageProps> = ({ address }) => {
   };
 
   const addDebt = (debtAmount: number, unit: TUnit) => {
+    setIsModalOpen(false);
     setIsLoading(true);
     const convertedAmount = web3.utils.toWei(`${debtAmount}`, unit);
 
@@ -66,12 +67,10 @@ export const AdminPage: FC<TAdminPageProps> = ({ address }) => {
         .send({ from: address })
         .then(() => {
           getPayers();
-          setIsModalOpen(false);
           setIsLoading(false);
         })
         .catch(() => {
           messageApi.open({ type: 'error', content: 'Произошла ошибка' });
-          setIsModalOpen(false);
           setIsLoading(false);
         });
     } else {
@@ -80,12 +79,10 @@ export const AdminPage: FC<TAdminPageProps> = ({ address }) => {
         .send({ from: address })
         .then(() => {
           getPayers();
-          setIsModalOpen(false);
           setIsLoading(false);
         })
         .catch(() => {
           messageApi.open({ type: 'error', content: 'Произошла ошибка' });
-          setIsModalOpen(false);
           setIsLoading(false);
         });
     }
