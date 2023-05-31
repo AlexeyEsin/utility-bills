@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from 'react';
-import { message } from 'antd';
+import { Spin, message } from 'antd';
 
 import { contract } from 'utils';
 import { Header } from './Header';
@@ -13,16 +13,25 @@ type TUserPageProps = {
 };
 
 export const UserPage: FC<TUserPageProps> = ({ address, isAdmin, onLogOut }) => {
+  const [isLoading, setIsLoading] = useState(false);
   const [accountBalance, setAccountBalance] = useState('0');
 
   const [messageApi, contextHolder] = message.useMessage();
 
   const getAccountBalance = () => {
+    setIsLoading(true);
+
     contract.methods
       .GetBalance()
       .call({ from: address })
-      .then((balance: string) => setAccountBalance(balance))
-      .catch(() => messageApi.open({ type: 'error', content: 'Произошла ошибка' }));
+      .then((balance: string) => {
+        setAccountBalance(balance);
+        setIsLoading(false);
+      })
+      .catch(() => {
+        messageApi.open({ type: 'error', content: 'Произошла ошибка' });
+        setIsLoading(false);
+      });
   };
 
   useEffect(() => {
@@ -32,23 +41,25 @@ export const UserPage: FC<TUserPageProps> = ({ address, isAdmin, onLogOut }) => 
   }, [address, isAdmin]);
 
   const handleCashOut = () => {
-    try {
-      contract.methods
-        .Withdraw()
-        .send({ from: address })
-        .then(() => {
-          setAccountBalance('0');
-        });
-    } catch (e) {
-      messageApi.open({ type: 'error', content: 'Произошла ошибка' });
-    }
+    setIsLoading(true);
+
+    contract.methods
+      .Withdraw()
+      .send({ from: address })
+      .then(() => getAccountBalance())
+      .catch(() => {
+        messageApi.open({ type: 'error', content: 'Произошла ошибка' });
+        setIsLoading(false);
+      });
   };
 
   return (
     <>
       {contextHolder}
-      <Header isAdmin={isAdmin} accountBalance={accountBalance} onCashOut={handleCashOut} onLogOut={onLogOut} />
-      {isAdmin ? <AdminPage address={address} /> : <PayerPage address={address} />}
+      <Spin spinning={isLoading}>
+        <Header isAdmin={isAdmin} accountBalance={accountBalance} onCashOut={handleCashOut} onLogOut={onLogOut} />
+        {isAdmin ? <AdminPage address={address} /> : <PayerPage address={address} />}
+      </Spin>
     </>
   );
 };
