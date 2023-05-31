@@ -5,32 +5,26 @@ export type SelectOption<T> = {
   label: string;
 };
 
-export type TBillStatus = 'paid' | 'unpaid' | 'overdue';
-
-export type TContractBill = {
-  uuid: string;
-  amount: string;
-  isPaid: boolean;
-  billingDate: string;
-  paymentDate: string;
-  status: TBillStatus;
-};
-
-export type TBill = TContractBill & {
-  amountWithUnit: string;
-};
-
 export type TContractPayer = {
   payerAddress: string;
-  name: string;
-  billsUuids: string[];
-  unpaidBillsCount: string;
-  unpaidAmount: string;
+  firstName: string;
+  middleName: string;
+  lastName: string;
+  debt: string;
 };
 
-export type TPayer = Omit<TContractPayer, 'payerAddress' | 'unpaidBillsCount'> & {
+export type TPayer = Omit<TContractPayer, 'payerAddress' | 'debt'> & {
   address: string;
-  billsCount: number;
-  unpaidBillsCount: number;
-  unpaidAmountWithUnit: string;
+  debt: number;
+  debtWithUnit: string;
+};
+
+export type TUserData = {
+  address: string;
+  username: string;
+  password: string;
+  firstName: string;
+  middleName: string;
+  lastName: string;
+  debt: number;
 };

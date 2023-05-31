@@ -15,14 +15,73 @@ export const CONTRACT_ABI: AbiItem[] = [
       },
       {
         internalType: 'string',
-        name: 'payerName',
+        name: 'username',
+        type: 'string',
+      },
+      {
+        internalType: 'string',
+        name: 'password',
+        type: 'string',
+      },
+      {
+        internalType: 'string',
+        name: 'firstName',
+        type: 'string',
+      },
+      {
+        internalType: 'string',
+        name: 'middleName',
+        type: 'string',
+      },
+      {
+        internalType: 'string',
+        name: 'lastName',
         type: 'string',
       },
     ],
-    name: 'AddPayer',
+    name: 'Register',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'string',
+        name: 'username',
+        type: 'string',
+      },
+      {
+        internalType: 'string',
+        name: 'password',
+        type: 'string',
+      },
+    ],
+    name: 'LogIn',
+    outputs: [
+      {
+        internalType: 'bool',
+        name: '',
+        type: 'bool',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+    constant: true,
+  },
+  {
+    inputs: [],
+    name: 'LogInAsAdmin',
+    outputs: [
+      {
+        internalType: 'bool',
+        name: '',
+        type: 'bool',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+    constant: true,
   },
   {
     inputs: [
@@ -31,40 +90,58 @@ export const CONTRACT_ABI: AbiItem[] = [
         name: 'payerAddress',
         type: 'address',
       },
+    ],
+    name: 'GetPayerInfo',
+    outputs: [
       {
-        internalType: 'string',
-        name: 'billUuid',
-        type: 'string',
-      },
-      {
-        internalType: 'string',
-        name: 'billingDate',
-        type: 'string',
-      },
-      {
-        internalType: 'uint256',
-        name: 'billAmount',
-        type: 'uint256',
+        components: [
+          {
+            internalType: 'address',
+            name: 'payerAddress',
+            type: 'address',
+          },
+          {
+            internalType: 'string',
+            name: 'username',
+            type: 'string',
+          },
+          {
+            internalType: 'string',
+            name: 'password',
+            type: 'string',
+          },
+          {
+            internalType: 'string',
+            name: 'firstName',
+            type: 'string',
+          },
+          {
+            internalType: 'string',
+            name: 'middleName',
+            type: 'string',
+          },
+          {
+            internalType: 'string',
+            name: 'lastName',
+            type: 'string',
+          },
+          {
+            internalType: 'uint256',
+            name: 'debt',
+            type: 'uint256',
+          },
+        ],
+        internalType: 'struct UtilityBills.Payer',
+        name: '',
+        type: 'tuple',
       },
     ],
-    name: 'AddBill',
-    outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: 'view',
     type: 'function',
+    constant: true,
   },
   {
-    inputs: [
-      {
-        internalType: 'string',
-        name: 'billUuid',
-        type: 'string',
-      },
-      {
-        internalType: 'string',
-        name: 'paymentDate',
-        type: 'string',
-      },
-    ],
+    inputs: [],
     name: 'MakePayment',
     outputs: [],
     stateMutability: 'payable',
@@ -84,26 +161,26 @@ export const CONTRACT_ABI: AbiItem[] = [
           },
           {
             internalType: 'string',
-            name: 'name',
+            name: 'firstName',
             type: 'string',
           },
           {
-            internalType: 'string[]',
-            name: 'billsUuids',
-            type: 'string[]',
+            internalType: 'string',
+            name: 'middleName',
+            type: 'string',
+          },
+          {
+            internalType: 'string',
+            name: 'lastName',
+            type: 'string',
           },
           {
             internalType: 'uint256',
-            name: 'unpaidBillsCount',
-            type: 'uint256',
-          },
-          {
-            internalType: 'uint256',
-            name: 'unpaidAmount',
+            name: 'debt',
             type: 'uint256',
           },
         ],
-        internalType: 'struct UtilityBills.Payer[]',
+        internalType: 'struct UtilityBills.ShortPayer[]',
         name: '',
         type: 'tuple[]',
       },
@@ -119,65 +196,29 @@ export const CONTRACT_ABI: AbiItem[] = [
         name: 'payerAddress',
         type: 'address',
       },
-    ],
-    name: 'GetPayerName',
-    outputs: [
       {
-        internalType: 'string',
-        name: '',
-        type: 'string',
+        internalType: 'uint256',
+        name: 'debtAmount',
+        type: 'uint256',
       },
     ],
-    stateMutability: 'view',
+    name: 'AddDebt',
+    outputs: [],
+    stateMutability: 'nonpayable',
     type: 'function',
-    constant: true,
   },
   {
     inputs: [
       {
-        internalType: 'address',
-        name: 'payerAddress',
-        type: 'address',
+        internalType: 'uint256',
+        name: 'debtAmount',
+        type: 'uint256',
       },
     ],
-    name: 'GetPayerBills',
-    outputs: [
-      {
-        components: [
-          {
-            internalType: 'string',
-            name: 'uuid',
-            type: 'string',
-          },
-          {
-            internalType: 'uint256',
-            name: 'amount',
-            type: 'uint256',
-          },
-          {
-            internalType: 'bool',
-            name: 'isPaid',
-            type: 'bool',
-          },
-          {
-            internalType: 'string',
-            name: 'billingDate',
-            type: 'string',
-          },
-          {
-            internalType: 'string',
-            name: 'paymentDate',
-            type: 'string',
-          },
-        ],
-        internalType: 'struct UtilityBills.Bill[]',
-        name: '',
-        type: 'tuple[]',
-      },
-    ],
-    stateMutability: 'view',
+    name: 'AddDebtToAll',
+    outputs: [],
+    stateMutability: 'nonpayable',
     type: 'function',
-    constant: true,
   },
   {
     inputs: [],

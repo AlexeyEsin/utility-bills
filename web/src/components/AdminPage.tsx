@@ -1,12 +1,9 @@
 import React, { FC, useEffect, useState } from 'react';
-import { message } from 'antd';
-import { v4 as uuidv4 } from 'uuid';
+import { Button, message } from 'antd';
 
-import type { TBill, TContractBill, TContractPayer, TUnit, TPayer } from 'types/types';
-import { contract, parseBills, parsePayers, web3 } from 'utils';
+import type { TContractPayer, TUnit, TPayer } from 'types/types';
+import { contract, parsePayers, web3 } from 'utils';
 import { PayersTable } from './PayersTable';
-import { AddPayerForm } from './AddPayerForm';
-import { BillsTable } from './BillsTable';
 import { IssueBillModal } from './IssueBillModal';
 
 type TAdminPageProps = {
@@ -18,8 +15,8 @@ export const AdminPage: FC<TAdminPageProps> = ({ address }) => {
 
   const [selectedPayer, setSelectedPayer] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalType, setModalType] = useState<'single' | 'all'>('single');
   const [payers, setPayers] = useState<TPayer[]>([]);
-  const [bills, setBills] = useState<TBill[]>([]);
 
   const getPayers = async () => {
     try {
@@ -31,65 +28,45 @@ export const AdminPage: FC<TAdminPageProps> = ({ address }) => {
   };
 
   useEffect(() => {
-    getPayers();
-  }, []);
-
-  const handleAddPayer = async (payer: TPayer) => {
-    const payerAddress = payer.address.trim();
-
-    if (!web3.utils.isAddress(payerAddress)) {
-      messageApi.open({ type: 'error', content: 'Некорректный адрес' });
-      return;
+    if (address) {
+      getPayers();
     }
-    if (payers.some((p) => p.address === payerAddress)) {
-      messageApi.open({ type: 'error', content: 'Плательщик с таким адресом уже существует' });
-      return;
-    }
+  }, [address]);
 
-    try {
-      contract.methods
-        .AddPayer(payer.address, payer.name)
-        .send({ from: address })
-        .then(() => {
-          setPayers((prev) => [
-            ...prev,
-            {
-              ...payer,
-              billsUuids: [],
-              billsCount: 0,
-              unpaidBillsCount: 0,
-              unpaidAmount: '0',
-              unpaidAmountWithUnit: '0 wei',
-            },
-          ]);
-        });
-    } catch (e) {
-      messageApi.open({ type: 'error', content: 'Произошла ошибка' });
-    }
+  const handleOpenModalSingle = (payerAddress: string) => {
+    setSelectedPayer(payerAddress);
+    setModalType('single');
+    setIsModalOpen(true);
   };
 
-  const handleOpenModal = (payerAddress: string) => {
-    setSelectedPayer(payerAddress);
+  const handleOpenModalAll = () => {
+    setModalType('all');
     setIsModalOpen(true);
   };
 
   const handleModalCancel = () => {
-    setSelectedPayer('');
     setIsModalOpen(false);
   };
 
-  const handleModalOk = (billAmount: number, unit: TUnit) => {
-    const convertedAmount = web3.utils.toWei(`${billAmount}`, unit);
-    const billUuid = uuidv4();
-    const billingDate = new Date().toISOString();
+  const addDebt = (debtAmount: number, unit: TUnit) => {
+    const convertedAmount = web3.utils.toWei(`${debtAmount}`, unit);
 
     try {
-      contract.methods
-        .AddBill(selectedPayer, billUuid, billingDate, convertedAmount)
-        .send({ from: address })
-        .then(() => {
-          getPayers();
-        });
+      if (modalType === 'single') {
+        contract.methods
+          .AddDebt(selectedPayer, convertedAmount)
+          .send({ from: address })
+          .then(() => {
+            getPayers();
+          });
+      } else {
+        contract.methods
+          .AddDebtToAll(convertedAmount)
+          .send({ from: address })
+          .then(() => {
+            getPayers();
+          });
+      }
     } catch (e) {
       messageApi.open({ type: 'error', content: 'Произошла ошибка' });
     } finally {
@@ -97,22 +74,14 @@ export const AdminPage: FC<TAdminPageProps> = ({ address }) => {
     }
   };
 
-  const handleRowClick = async (payerAddress: string) => {
-    try {
-      const fetchedBills: TContractBill[] = await contract.methods.GetPayerBills(payerAddress).call({ from: address });
-      setBills(parseBills(fetchedBills));
-    } catch (e) {
-      messageApi.open({ type: 'error', content: 'Произошла ошибка' });
-    }
-  };
-
   return (
-    <div className="adminPageContainer">
+    <div className="adminPage">
       {contextHolder}
-      <PayersTable tableData={payers} onIssueBill={handleOpenModal} onRowClick={handleRowClick} />
-      <AddPayerForm onAdd={handleAddPayer} />
-      <BillsTable tableData={bills} isAdmin />
-      <IssueBillModal isOpen={isModalOpen} onOk={handleModalOk} onCancel={handleModalCancel} />
+      <PayersTable tableData={payers} onIssueBill={handleOpenModalSingle} />
+      <Button className="debtAll" type="primary" onClick={handleOpenModalAll} disabled={!payers.length}>
+        Выставить счёт всем
+      </Button>
+      <IssueBillModal isOpen={isModalOpen} onOk={addDebt} onCancel={handleModalCancel} />
     </div>
   );
 };

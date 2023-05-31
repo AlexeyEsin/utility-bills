@@ -12,38 +12,63 @@
     justify-content: space-between;
     align-items: center;
 
-    .cashOut {
+    .buttons {
+      display: flex;
+      column-gap: 20px;
+
+      .cashOut {
+        display: flex;
+        align-items: center;
+        column-gap: 20px;
+      }
+    }
+  }
+
+  .payerPage {
+    margin-top: 20px;
+
+    .debtInfo {
+      margin-top: 20px;
       display: flex;
       align-items: center;
       column-gap: 20px;
     }
   }
 
-  .addPayerForm {
-    .formItem {
-      width: 400px;
-    }
-  }
-
-  .payersTableContainer {
-    margin-top: 10px;
-
-    .payersTable {
-      height: 341px;
-    }
-  }
-
-  .billsTableContainer {
+  .adminPage {
     margin-top: 20px;
 
-    .billsTable {
-      height: 341px;
+    .debtAll {
+      margin-top: 40px;
     }
   }
 
   .issueBillModal {
     .formItem {
       width: 400px;
+    }
+  }
+
+  .authContainer {
+    margin: 30px 0 0 0;
+    display: flex;
+    justify-content: center;
+
+    .authForm {
+      width: 600px;
+      padding: 20px;
+      border: 1px solid rgb(190, 190, 190);
+      border-radius: 10px;
+
+      .header {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      .buttons {
+        display: flex;
+        justify-content: space-between;
+      }
     }
   }
 }

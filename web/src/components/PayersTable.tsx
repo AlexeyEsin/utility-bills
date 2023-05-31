@@ -3,14 +3,14 @@ import { Button, Table, Typography } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 
 import type { TPayer } from 'types/types';
+import { getFullName } from 'utils';
 
 type TPayersTableProps = {
   tableData: TPayer[];
   onIssueBill: (payerAddress: string) => void;
-  onRowClick: (payerAddress: string) => void;
 };
 
-export const PayersTable: FC<TPayersTableProps> = ({ tableData, onIssueBill, onRowClick }) => {
+export const PayersTable: FC<TPayersTableProps> = ({ tableData, onIssueBill }) => {
   const columns: ColumnsType<TPayer> = [
     {
       title: 'Адрес в Блокчейн',
@@ -18,28 +18,17 @@ export const PayersTable: FC<TPayersTableProps> = ({ tableData, onIssueBill, onR
       key: 'address',
     },
     {
-      title: 'Имя плательщика',
-      dataIndex: 'name',
-      key: 'name',
-      sorter: (a, b) => a.name.localeCompare(b.name),
+      title: 'ФИО плательщика',
+      dataIndex: 'fullName',
+      key: 'fullName',
+      sorter: (a, b) => getFullName(a).localeCompare(getFullName(b)),
+      render: (_, record) => getFullName(record),
     },
     {
-      title: 'Выставленных счетов',
-      dataIndex: 'billsCount',
-      key: 'billsCount',
-      sorter: (a, b) => a.billsCount - b.billsCount,
-    },
-    {
-      title: 'Неоплаченных счетов',
-      dataIndex: 'unpaidBillsCount',
-      key: 'unpaidBillsCount',
-      sorter: (a, b) => a.unpaidBillsCount - b.unpaidBillsCount,
-    },
-    {
-      title: 'Сумма неуплаты',
-      dataIndex: 'unpaidAmountWithUnit',
-      key: 'unpaidAmountWithUnit',
-      sorter: (a, b) => a.unpaidAmount.localeCompare(b.unpaidAmount),
+      title: 'Сумма задолженности',
+      dataIndex: 'debtWithUnit',
+      key: 'debtWithUnit',
+      sorter: (a, b) => a.debt - b.debt,
     },
     {
       title: 'Действие',
@@ -54,7 +43,7 @@ export const PayersTable: FC<TPayersTableProps> = ({ tableData, onIssueBill, onR
   ];
 
   return (
-    <div className="payersTableContainer">
+    <div>
       <Typography.Title level={4}>Плательщики</Typography.Title>
       <Table
         className="payersTable"
@@ -66,9 +55,6 @@ export const PayersTable: FC<TPayersTableProps> = ({ tableData, onIssueBill, onR
         pagination={{
           pageSize: 5,
         }}
-        onRow={(record) => ({
-          onClick: () => onRowClick(record.address),
-        })}
       />
     </div>
   );

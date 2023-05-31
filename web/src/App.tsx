@@ -1,35 +1,52 @@
 import React, { useEffect, useState } from 'react';
 import { Layout, message } from 'antd';
 
-import { AdminPage } from 'components/AdminPage';
-import { PayerPage } from 'components/PayerPage';
-import { contract, web3 } from 'utils';
-import { Header } from 'components/Header';
+import { web3 } from 'utils';
+import { UserPage } from 'components/UserPage';
+import { AuthorizationPage } from 'components/AuthorizationPage';
 
 const { Content } = Layout;
 
 export const App = () => {
   const [messageApi, contextHolder] = message.useMessage();
 
+  const [isAuthorized, setIsAuthorized] = useState(false);
   const [address, setAddress] = useState('');
   const [isAdmin, setIsAdmin] = useState(false);
-  const [accountBalance, setAccountBalance] = useState('0');
 
-  const handleAccountChange = async () => {
-    const accounts = await web3.eth.getAccounts();
-    setAddress(accounts[0]);
+  const handleLogIn = () => {
+    setIsAuthorized(true);
   };
 
-  const getAccountBalance = async () => {
-    const fetchedBalance = await contract.methods.GetBalance().call({ from: address });
-    setAccountBalance(fetchedBalance);
+  const handleLogInAsAdmin = () => {
+    setIsAuthorized(true);
+    setIsAdmin(true);
+  };
+
+  const handleLogOut = () => {
+    setIsAuthorized(false);
+    setIsAdmin(false);
+  };
+
+  const handleAccountChange = async () => {
+    try {
+      const accounts = await web3.eth.getAccounts();
+      setAddress(accounts[0]);
+      handleLogOut();
+    } catch (e) {
+      messageApi.open({ type: 'error', content: 'Произошла ошибка' });
+    }
   };
 
   useEffect(() => {
     const initialize = async () => {
-      const accounts = await web3.eth.requestAccounts();
-      setAddress(accounts[0]);
-      window.ethereum?.on('accountsChanged', handleAccountChange);
+      try {
+        const accounts = await web3.eth.requestAccounts();
+        setAddress(accounts[0]);
+        window.ethereum?.on('accountsChanged', handleAccountChange);
+      } catch (e) {
+        messageApi.open({ type: 'error', content: 'Произошла ошибка' });
+      }
     };
 
     initialize();
@@ -40,34 +57,28 @@ export const App = () => {
   }, []);
 
   useEffect(() => {
-    const isAdminAddress = address === process.env.ADMIN_ADDRESS;
-    setIsAdmin(isAdminAddress);
+    const isAuthorizedFromStorage = sessionStorage.getItem('isAuthorized');
+    const isAdminFromStorage = sessionStorage.getItem('isAdmin');
 
-    if (isAdminAddress) {
-      getAccountBalance();
-    }
-  }, [address]);
+    setIsAuthorized(isAuthorizedFromStorage === 'true');
+    setIsAdmin(isAdminFromStorage === 'true');
+  }, []);
 
-  const handleCashOut = () => {
-    try {
-      contract.methods
-        .Withdraw()
-        .send({ from: address })
-        .then(() => {
-          setAccountBalance('0');
-        });
-    } catch (e) {
-      messageApi.open({ type: 'error', content: 'Произошла ошибка' });
-    }
-  };
+  useEffect(() => {
+    sessionStorage.setItem('isAuthorized', String(isAuthorized));
+    sessionStorage.setItem('isAdmin', String(isAdmin));
+  }, [isAuthorized, isAdmin]);
 
   return (
     <Layout>
       {contextHolder}
       <Content>
         <div className="mainContainer">
-          <Header isAdmin={isAdmin} accountBalance={accountBalance} onCashOut={handleCashOut} />
-          {isAdmin ? <AdminPage address={address} /> : <PayerPage address={address} />}
+          {isAuthorized ? (
+            <UserPage address={address} isAdmin={isAdmin} onLogOut={handleLogOut} />
+          ) : (
+            <AuthorizationPage address={address} onLogIn={handleLogIn} onLogInAsAdmin={handleLogInAsAdmin} />
+          )}
         </div>
       </Content>
     </Layout>
