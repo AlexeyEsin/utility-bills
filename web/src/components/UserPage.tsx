@@ -17,13 +17,12 @@ export const UserPage: FC<TUserPageProps> = ({ address, isAdmin, onLogOut }) => 
 
   const [messageApi, contextHolder] = message.useMessage();
 
-  const getAccountBalance = async () => {
-    try {
-      const fetchedBalance = await contract.methods.GetBalance().call({ from: address });
-      setAccountBalance(fetchedBalance);
-    } catch (e) {
-      messageApi.open({ type: 'error', content: 'Произошла ошибка' });
-    }
+  const getAccountBalance = () => {
+    contract.methods
+      .GetBalance()
+      .call({ from: address })
+      .then((balance: string) => setAccountBalance(balance))
+      .catch(() => messageApi.open({ type: 'error', content: 'Произошла ошибка' }));
   };
 
   useEffect(() => {

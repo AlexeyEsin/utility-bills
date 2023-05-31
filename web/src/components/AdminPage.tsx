@@ -18,13 +18,12 @@ export const AdminPage: FC<TAdminPageProps> = ({ address }) => {
   const [modalType, setModalType] = useState<'single' | 'all'>('single');
   const [payers, setPayers] = useState<TPayer[]>([]);
 
-  const getPayers = async () => {
-    try {
-      const fetchedPayers: TContractPayer[] = await contract.methods.GetPayers().call({ from: address });
-      setPayers(parsePayers(fetchedPayers));
-    } catch (e) {
-      messageApi.open({ type: 'error', content: 'Произошла ошибка' });
-    }
+  const getPayers = () => {
+    contract.methods
+      .GetPayers()
+      .call({ from: address })
+      .then((fetchedPayers: TContractPayer[]) => setPayers(parsePayers(fetchedPayers)))
+      .catch(() => messageApi.open({ type: 'error', content: 'Произошла ошибка' }));
   };
 
   useEffect(() => {

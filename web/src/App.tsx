@@ -28,25 +28,25 @@ export const App = () => {
     setIsAdmin(false);
   };
 
-  const handleAccountChange = async () => {
-    try {
-      const accounts = await web3.eth.getAccounts();
-      setAddress(accounts[0]);
-      handleLogOut();
-    } catch (e) {
-      messageApi.open({ type: 'error', content: 'Произошла ошибка' });
-    }
+  const handleAccountChange = () => {
+    web3.eth
+      .getAccounts()
+      .then((accounts) => {
+        setAddress(accounts[0]);
+        handleLogOut();
+      })
+      .catch(() => messageApi.open({ type: 'error', content: 'Произошла ошибка' }));
   };
 
   useEffect(() => {
-    const initialize = async () => {
-      try {
-        const accounts = await web3.eth.requestAccounts();
-        setAddress(accounts[0]);
-        window.ethereum?.on('accountsChanged', handleAccountChange);
-      } catch (e) {
-        messageApi.open({ type: 'error', content: 'Произошла ошибка' });
-      }
+    const initialize = () => {
+      web3.eth
+        .requestAccounts()
+        .then((accounts) => {
+          setAddress(accounts[0]);
+          window.ethereum?.on('accountsChanged', handleAccountChange);
+        })
+        .catch(() => messageApi.open({ type: 'error', content: 'Произошла ошибка' }));
     };
 
     initialize();

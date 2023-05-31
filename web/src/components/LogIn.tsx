@@ -47,7 +47,7 @@ export const LogIn: FC<TLogInProps> = ({ address, onLogIn, onLogInAsAdmin, toReg
       });
   };
 
-  const handleFinish = async () => {
+  const handleFinish = () => {
     const formValues = form.getFieldsValue();
     const { username, password } = formValues;
 
