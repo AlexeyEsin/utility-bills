@@ -16,7 +16,7 @@ export const convertAmount = (amount: string) => {
   if (amount.length > 9) {
     return `${web3.utils.fromWei(`${amount}`, 'gwei')} gwei`;
   }
-  return `${amount} wei`;
+  return `${amount || 0} wei`;
 };
 
 export const parsePayer = (payer: TContractPayer): TPayer => ({

@@ -16,7 +16,7 @@ export const Header: FC<THeaderProps> = ({ isAdmin, accountBalance, onCashOut, o
       {isAdmin && (
         <div className="cashOut">
           <Typography.Text>Средств на счету: {convertAmount(accountBalance)}</Typography.Text>
-          <Button type="primary" onClick={onCashOut} disabled={accountBalance === '0'}>
+          <Button type="primary" onClick={onCashOut} disabled={!Number(accountBalance)}>
             Вывести
           </Button>
         </div>
